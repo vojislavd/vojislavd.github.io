@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="How to efficiently seed millions of records into a local database using Laravel seeders and factories without running out of memory.">
+    <meta name="author" content="Vojislav Dragicevic">
+    <meta name="robots" content="index,follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://vojislavd.com/articles/seed-millions-of-records-with-laravel/">
+    <meta property="og:title" content="Seed Millions Of Records To Local Database With Laravel">
+    <meta property="og:description" content="How to efficiently seed millions of records into a local database using Laravel seeders and factories without running out of memory.">
+    <meta property="og:image" content="https://vojislavd.com/images/me.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Seed Millions Of Records To Local Database With Laravel">
+    <meta name="twitter:description" content="How to efficiently seed millions of records into a local database using Laravel seeders and factories without running out of memory.">
+    <meta name="twitter:image" content="https://vojislavd.com/images/me.jpg">
+
+    <title>Seed Millions Of Records To Local Database With Laravel | Vojislav Dragicevic</title>
+    <link rel="canonical" href="https://vojislavd.com/articles/seed-millions-of-records-with-laravel/">
+    <link rel="alternate" href="https://vojislavd.com/articles/seed-millions-of-records-with-laravel/" hreflang="en">
+    <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" crossorigin href="/assets/style-CjBnfhH-.css">
+</head>
+<body class="bg-slate-50 font-mono text-slate-800 min-h-screen">
+    <div class="max-w-3xl mx-auto w-full px-6 py-10 sm:py-16">
+        <main>
+            <a
+                href="/"
+                class="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-700 transition-colors duration-200 mb-10"
+            >
+                <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Back
+            </a>
+
+            <article>
+                <header class="space-y-4 mb-8 sm:mb-12">
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight leading-snug">Seed Millions Of Records To Local Database With Laravel</h1>
+                    <time class="text-xs text-slate-400">Mar 24, 2022</time>
+                </header>
+
+                <div class="article-content">
+                    <p>When you are working on some big project, you will probably need to test speed of your queries, and for that you will need to have a lot of fake records in your database.</p>
+<p>You can do this with database seeders, but it can be really slow if you need to seed a couple million records to the database.</p>
+<p>In this article I will show you a better and faster way to do this.</p>
+<h2>Setup Project</h2>
+<p>Let&#39;s first setup our project. It will be a really basic app with one table and one column.</p>
+<p>Create fresh Laravel project, at the time of writing this article latest version of Laravel framework is 9.5.1.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">composer</span><span style="color:#CE9178"> create-project</span><span style="color:#CE9178"> laravel/laravel</span><span style="color:#569CD6"> --prefer-dist</span><span style="color:#CE9178"> seed-millions</span></span></code></pre><p>Create a model &quot;Data&quot; with migration, factory and seeder.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">php</span><span style="color:#CE9178"> artisan</span><span style="color:#CE9178"> make:model</span><span style="color:#CE9178"> Data</span><span style="color:#569CD6"> -mfs</span></span></code></pre><p>In migration file add new field &quot;code&quot; which will be string.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#569CD6">public</span><span style="color:#569CD6"> function</span><span style="color:#DCDCAA"> up</span><span style="color:#D4D4D4">()</span></span>
+<span class="line"><span style="color:#D4D4D4">{</span></span>
+<span class="line"><span style="color:#4EC9B0">    Schema</span><span style="color:#D4D4D4">::</span><span style="color:#DCDCAA">create</span><span style="color:#D4D4D4">(</span><span style="color:#CE9178">'data'</span><span style="color:#D4D4D4">, </span><span style="color:#569CD6">function</span><span style="color:#D4D4D4"> (</span><span style="color:#4EC9B0">Blueprint</span><span style="color:#9CDCFE"> $table</span><span style="color:#D4D4D4">) {</span></span>
+<span class="line"><span style="color:#9CDCFE">        $table</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">id</span><span style="color:#D4D4D4">();</span></span>
+<span class="line"><span style="color:#9CDCFE">        $table</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">string</span><span style="color:#D4D4D4">(</span><span style="color:#CE9178">'code'</span><span style="color:#D4D4D4">);</span></span>
+<span class="line"><span style="color:#9CDCFE">        $table</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">timestamps</span><span style="color:#D4D4D4">();</span></span>
+<span class="line"><span style="color:#D4D4D4">    });</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>Run migrations.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">php</span><span style="color:#CE9178"> artisan</span><span style="color:#CE9178"> migrate</span></span></code></pre><p>As last step, let&#39;s create a factory to insert 10 random characters for &quot;code&quot; field.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#569CD6">public</span><span style="color:#569CD6"> function</span><span style="color:#DCDCAA"> definition</span><span style="color:#D4D4D4">()</span></span>
+<span class="line"><span style="color:#D4D4D4">{</span></span>
+<span class="line"><span style="color:#C586C0">    return</span><span style="color:#D4D4D4"> [</span></span>
+<span class="line"><span style="color:#CE9178">        'code'</span><span style="color:#D4D4D4"> => \Illuminate\Support\</span><span style="color:#4EC9B0">Str</span><span style="color:#D4D4D4">::</span><span style="color:#DCDCAA">random</span><span style="color:#D4D4D4">(</span><span style="color:#B5CEA8">10</span><span style="color:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#D4D4D4">    ];</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>That&#39;s it. We have now our project ready.</p>
+<h2>Seed Database</h2>
+<p>For this case, our goal will be to seed 10 million records to our table &quot;data&quot;.</p>
+<p>We will first seed 1.000 records to see how much time it takes and based on that we will calculate how much time it would take to seed 10 million records.</p>
+<p>Let&#39;s define it in the DataSeeder class. We will call factory method on our model and pass to it number of records we want to seed.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#569CD6">public</span><span style="color:#569CD6"> function</span><span style="color:#DCDCAA"> run</span><span style="color:#D4D4D4">()</span></span>
+<span class="line"><span style="color:#D4D4D4">{</span></span>
+<span class="line"><span style="color:#D4D4D4">    \App\Models\</span><span style="color:#4EC9B0">Data</span><span style="color:#D4D4D4">::</span><span style="color:#DCDCAA">factory</span><span style="color:#D4D4D4">(</span><span style="color:#B5CEA8">1000</span><span style="color:#D4D4D4">)-></span><span style="color:#DCDCAA">create</span><span style="color:#D4D4D4">();</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>And we will call our seeder class in the DatabaseSeeder class.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#569CD6">public</span><span style="color:#569CD6"> function</span><span style="color:#DCDCAA"> run</span><span style="color:#D4D4D4">()</span></span>
+<span class="line"><span style="color:#D4D4D4">{</span></span>
+<span class="line"><span style="color:#569CD6">    $this</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">call</span><span style="color:#D4D4D4">(</span><span style="color:#4EC9B0">DataSeeder</span><span style="color:#D4D4D4">::</span><span style="color:#569CD6">class</span><span style="color:#D4D4D4">);</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>Let&#39;s run our seeder and see how long it takes to seed 1.000 records to database.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">$</span><span style="color:#CE9178"> php</span><span style="color:#CE9178"> artisan</span><span style="color:#CE9178"> db:seed</span></span>
+<span class="line"><span style="color:#DCDCAA">Seeding:</span><span style="color:#CE9178"> Database</span><span style="color:#D7BA7D">\S</span><span style="color:#CE9178">eeders</span><span style="color:#D7BA7D">\D</span><span style="color:#CE9178">ataSeeder</span></span>
+<span class="line"><span style="color:#DCDCAA">Seeded:</span><span style="color:#CE9178"> Database</span><span style="color:#D7BA7D">\S</span><span style="color:#CE9178">eeders</span><span style="color:#D7BA7D">\D</span><span style="color:#CE9178">ataSeeder</span><span style="color:#D4D4D4"> (10,329.51ms)</span></span></code></pre><p>As we can see, it took ~10s to seed 1.000 records to database. So if we calculate how much time it would take this approach to seed 10 million records it will be:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span>10,32 sec x 10.000 = 103.200 sec</span></span>
+<span class="line"><span>103.200 sec = 1720 min</span></span>
+<span class="line"><span>1720 min = 28,66 hours</span></span></code></pre><p>So, to seed 10 million records to database with this approach will take us ~28 hours.</p>
+<p>Let&#39;s try another approach. We will first create an array with data we want to insert to database. After that, we will split that array into chunks and for each of those chunks we will call &quot;insert&quot; method on our model.</p>
+<p>Make changes in our DataSeeder class.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#569CD6">public</span><span style="color:#569CD6"> function</span><span style="color:#DCDCAA"> run</span><span style="color:#D4D4D4">()</span></span>
+<span class="line"><span style="color:#D4D4D4">{</span></span>
+<span class="line"><span style="color:#C586C0">    for</span><span style="color:#D4D4D4"> (</span><span style="color:#9CDCFE">$i</span><span style="color:#D4D4D4">=</span><span style="color:#B5CEA8">0</span><span style="color:#D4D4D4">; </span><span style="color:#9CDCFE">$i</span><span style="color:#D4D4D4"> &#x3C; </span><span style="color:#B5CEA8">1000</span><span style="color:#D4D4D4">; </span><span style="color:#9CDCFE">$i</span><span style="color:#D4D4D4">++) {</span></span>
+<span class="line"><span style="color:#9CDCFE">        $data</span><span style="color:#D4D4D4">[] = [</span></span>
+<span class="line"><span style="color:#CE9178">            'code'</span><span style="color:#D4D4D4"> => \Illuminate\Support\</span><span style="color:#4EC9B0">Str</span><span style="color:#D4D4D4">::</span><span style="color:#DCDCAA">random</span><span style="color:#D4D4D4">(</span><span style="color:#B5CEA8">10</span><span style="color:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#D4D4D4">        ];</span></span>
+<span class="line"><span style="color:#D4D4D4">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9CDCFE">    $chunks</span><span style="color:#D4D4D4"> = </span><span style="color:#DCDCAA">array_chunk</span><span style="color:#D4D4D4">(</span><span style="color:#9CDCFE">$data</span><span style="color:#D4D4D4">, </span><span style="color:#B5CEA8">500</span><span style="color:#D4D4D4">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C586C0">    foreach</span><span style="color:#D4D4D4"> (</span><span style="color:#9CDCFE">$chunks</span><span style="color:#D4D4D4"> as </span><span style="color:#9CDCFE">$chunk</span><span style="color:#D4D4D4">) {</span></span>
+<span class="line"><span style="color:#D4D4D4">        \App\Models\</span><span style="color:#4EC9B0">Data</span><span style="color:#D4D4D4">::</span><span style="color:#DCDCAA">insert</span><span style="color:#D4D4D4">(</span><span style="color:#9CDCFE">$chunk</span><span style="color:#D4D4D4">);</span></span>
+<span class="line"><span style="color:#D4D4D4">    }</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>Let&#39;s run again our seeder to see how much time it takes with this approach to seed 1.000 records to database.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">$</span><span style="color:#CE9178"> php</span><span style="color:#CE9178"> artisan</span><span style="color:#CE9178"> db:seed</span></span>
+<span class="line"><span style="color:#DCDCAA">Seeding:</span><span style="color:#CE9178"> Database</span><span style="color:#D7BA7D">\S</span><span style="color:#CE9178">eeders</span><span style="color:#D7BA7D">\D</span><span style="color:#CE9178">ataSeeder</span></span>
+<span class="line"><span style="color:#DCDCAA">Seeded:</span><span style="color:#CE9178"> Database</span><span style="color:#D7BA7D">\S</span><span style="color:#CE9178">eeders</span><span style="color:#D7BA7D">\D</span><span style="color:#CE9178">ataSeeder</span><span style="color:#D4D4D4"> (70.97ms)</span></span></code></pre><p>As you can see, now it takes ~71ms to seed 1.000 records to database.</p>
+<p>If we calculate how much time it will take to seed 10 million records, we get:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span>0.071 sec x 10.000 = 710 sec</span></span>
+<span class="line"><span>710 sec = 11,83 min</span></span></code></pre><p>It will take ~12 minutes to seed the same amount of data.</p>
+<p>But this can be even faster if we get bigger chunks of data. Let&#39;s try to seed 100.000 records with chunks of 50.000.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">$</span><span style="color:#CE9178"> php</span><span style="color:#CE9178"> artisan</span><span style="color:#CE9178"> db:seed</span></span>
+<span class="line"><span style="color:#DCDCAA">Seeding:</span><span style="color:#CE9178"> Database</span><span style="color:#D7BA7D">\S</span><span style="color:#CE9178">eeders</span><span style="color:#D7BA7D">\D</span><span style="color:#CE9178">ataSeeder</span></span>
+<span class="line"><span style="color:#DCDCAA">Seeded:</span><span style="color:#CE9178"> Database</span><span style="color:#D7BA7D">\S</span><span style="color:#CE9178">eeders</span><span style="color:#D7BA7D">\D</span><span style="color:#CE9178">ataSeeder</span><span style="color:#D4D4D4"> (1,978.38ms)</span></span></code></pre><p>If we calculate how much time it will take to seed 10 million records, we get:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span>1.97 sec x 100 = 197 sec</span></span>
+<span class="line"><span>197 sec = 3,28 min</span></span></code></pre><p>So, if we compare these results, we see that for 10 million records in a standard way of seeding it will take ~28 hours and in this way ~3 minutes.</p>
+<h2>Conclusion</h2>
+<p>Of course, I would not suggest to seed 10 million at once, separate it in a couple of runs (maybe 1 million per run?) and you will probably need to play a little with the number of chunks to see what works fastest.</p>
+<p>That&#39;s it. You can now seed your database with millions of records in a couple of minutes.</p>
+
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <footer class="max-w-3xl mx-auto w-full px-6 pb-8">
+        <div class="h-px bg-slate-200 mb-6"></div>
+        <p class="text-xs text-slate-400 text-center">
+            © 2014–<script>document.write(new Date().getFullYear())</script> <a href="https://vojislavd.com" class="hover:text-slate-600 transition-colors duration-200">Vojislav Dragicevic</a>. All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+        const iconCopy = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>'
+        const iconCheck = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+
+        document.querySelectorAll('.article-content pre').forEach(pre => {
+            const wrapper = document.createElement('div')
+            wrapper.style.cssText = 'position:relative'
+            pre.parentNode.insertBefore(wrapper, pre)
+            wrapper.appendChild(pre)
+
+            const btn = document.createElement('button')
+            btn.className = 'copy-btn'
+            btn.innerHTML = iconCopy
+            wrapper.appendChild(btn)
+
+            btn.addEventListener('click', () => {
+                navigator.clipboard.writeText(pre.querySelector('code').innerText)
+                btn.innerHTML = iconCheck
+                btn.classList.add('copied')
+                setTimeout(() => {
+                    btn.innerHTML = iconCopy
+                    btn.classList.remove('copied')
+                }, 2000)
+            })
+        })
+    </script>
+</body>
+</html>

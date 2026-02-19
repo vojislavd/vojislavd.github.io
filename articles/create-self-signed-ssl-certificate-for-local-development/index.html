@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Step-by-step guide to creating a self-signed SSL certificate on Linux and configuring Nginx to use it for local HTTPS development.">
+    <meta name="author" content="Vojislav Dragicevic">
+    <meta name="robots" content="index,follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://vojislavd.com/articles/create-self-signed-ssl-certificate-for-local-development/">
+    <meta property="og:title" content="Create a Self-Signed SSL Certificate for Local Development With Nginx">
+    <meta property="og:description" content="Step-by-step guide to creating a self-signed SSL certificate on Linux and configuring Nginx to use it for local HTTPS development.">
+    <meta property="og:image" content="https://vojislavd.com/images/me.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Create a Self-Signed SSL Certificate for Local Development With Nginx">
+    <meta name="twitter:description" content="Step-by-step guide to creating a self-signed SSL certificate on Linux and configuring Nginx to use it for local HTTPS development.">
+    <meta name="twitter:image" content="https://vojislavd.com/images/me.jpg">
+
+    <title>Create a Self-Signed SSL Certificate for Local Development With Nginx | Vojislav Dragicevic</title>
+    <link rel="canonical" href="https://vojislavd.com/articles/create-self-signed-ssl-certificate-for-local-development/">
+    <link rel="alternate" href="https://vojislavd.com/articles/create-self-signed-ssl-certificate-for-local-development/" hreflang="en">
+    <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" crossorigin href="/assets/style-CjBnfhH-.css">
+</head>
+<body class="bg-slate-50 font-mono text-slate-800 min-h-screen">
+    <div class="max-w-3xl mx-auto w-full px-6 py-10 sm:py-16">
+        <main>
+            <a
+                href="/"
+                class="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-700 transition-colors duration-200 mb-10"
+            >
+                <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Back
+            </a>
+
+            <article>
+                <header class="space-y-4 mb-8 sm:mb-12">
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight leading-snug">Create a Self-Signed SSL Certificate for Local Development With Nginx</h1>
+                    <time class="text-xs text-slate-400">Apr 29, 2022</time>
+                </header>
+
+                <div class="article-content">
+                    <p>We&#39;ll create a self-signed SSL certificate on a Linux machine which we can use for local development with Nginx.</p>
+<p><em><b>Note:</b> This is only for local development, do not use a self-signed SSL certificate on any publicly accessible website.</em></p>
+<h2>Create a self-signed SSL certificate</h2>
+<p>First, we&#39;ll create a new directory where will be stored all the required files for this certificate.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">sudo</span><span style="color:#CE9178"> mkdir</span><span style="color:#CE9178"> /etc/ssl/self-signed-cert</span></span></code></pre><p>We&#39;ll create an SSL key encrypted with 2048 bits.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">sudo</span><span style="color:#CE9178"> openssl</span><span style="color:#CE9178"> genrsa</span><span style="color:#569CD6"> -out</span><span style="color:#CE9178"> "/etc/ssl/self-signed-cert/self-signed-cert.key"</span><span style="color:#B5CEA8"> 2048</span></span></code></pre><p>Next, create a certificate sign request with the key we just created.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">sudo</span><span style="color:#CE9178"> openssl</span><span style="color:#CE9178"> req</span><span style="color:#569CD6"> -new</span><span style="color:#569CD6"> -key</span><span style="color:#CE9178"> "/etc/ssl/self-signed-cert/self-signed-cert.key"</span><span style="color:#569CD6"> -out</span><span style="color:#CE9178"> "/etc/ssl/self-signed-cert/self-signed-cert.csr"</span></span></code></pre><p>After this, you will be prompted to enter some information like country name, state or province name, locality name, etc.</p>
+<p>You can enter your information here, for example:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">Country</span><span style="color:#CE9178"> Name:</span><span style="color:#CE9178"> SR</span></span>
+<span class="line"><span style="color:#DCDCAA">State</span><span style="color:#CE9178"> or</span><span style="color:#CE9178"> Province</span><span style="color:#CE9178"> name:</span><span style="color:#CE9178"> Serbia</span></span>
+<span class="line"><span style="color:#DCDCAA">Locality</span><span style="color:#CE9178"> Name:</span><span style="color:#CE9178"> Belgrade</span></span>
+<span class="line"><span style="color:#DCDCAA">Organization</span><span style="color:#CE9178"> Name:</span><span style="color:#CE9178"> Self</span><span style="color:#CE9178"> Signed</span><span style="color:#CE9178"> SSL</span><span style="color:#CE9178"> Certificate</span></span>
+<span class="line"><span style="color:#DCDCAA">Organizational</span><span style="color:#CE9178"> Unit</span><span style="color:#CE9178"> Name:</span></span>
+<span class="line"><span style="color:#DCDCAA">Common</span><span style="color:#CE9178"> Name:</span></span>
+<span class="line"><span style="color:#DCDCAA">Email</span><span style="color:#CE9178"> Address:</span></span>
+<span class="line"><span style="color:#DCDCAA">A</span><span style="color:#CE9178"> challenge</span><span style="color:#CE9178"> password:</span></span>
+<span class="line"><span style="color:#DCDCAA">An</span><span style="color:#CE9178"> optional</span><span style="color:#CE9178"> company</span><span style="color:#CE9178"> name:</span></span></code></pre><p>The last step is to create a certificate itself with the request and key we just created.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">sudo</span><span style="color:#CE9178"> openssl</span><span style="color:#CE9178"> x509</span><span style="color:#569CD6"> -req</span><span style="color:#569CD6"> -days</span><span style="color:#B5CEA8"> 365</span><span style="color:#569CD6"> -in</span><span style="color:#CE9178"> "/etc/ssl/self-signed-cert/self-signed-cert.csr"</span><span style="color:#569CD6"> -signkey</span><span style="color:#CE9178"> "/etc/ssl/self-signed-cert/self-signed-cert.key"</span><span style="color:#569CD6"> -out</span><span style="color:#CE9178"> "/etc/ssl/self-signed-cert/self-signed-cert.crt"</span></span></code></pre><p>In this example, the certificate we created will be valid for 1 year (365 days), if you want you can change this per your need.</p>
+<p>That&#39;s it. Our self-signed SSL certificate is created.</p>
+<h2>Configure Nginx to use this certificate</h2>
+<p>To configure an HTTPS server, the SSL parameter must be enabled on listening sockets in the server block, and the locations of the server certificate and private key files should be specified.</p>
+<p>Open the Nginx configuration file for a project where you want to use this certificate.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">sudo</span><span style="color:#CE9178"> vim</span><span style="color:#CE9178"> /etc/nginx/sites-available/my-app.test</span></span></code></pre><p>Enable SSL on the listening socket and specify the location of the certificate and private key files.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#569CD6">server</span><span style="color:#D4D4D4"> {</span></span>
+<span class="line"><span style="color:#569CD6">    listen </span><span style="color:#B5CEA8">443</span><span style="color:#D4D4D4"> ssl;</span></span>
+<span class="line"><span style="color:#569CD6">    ssl_certificate </span><span style="color:#D4D4D4">/etc/ssl/self-signed-cert/self-signed-cert.crt;</span></span>
+<span class="line"><span style="color:#569CD6">    ssl_certificate_key </span><span style="color:#D4D4D4">/etc/ssl/self-signed-cert/self-signed-cert.key;</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>For example, the Nginx config file will look like this after you added those lines:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#569CD6">server</span><span style="color:#D4D4D4"> {</span></span>
+<span class="line"><span style="color:#569CD6">    listen </span><span style="color:#B5CEA8">80</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#569CD6">    listen </span><span style="color:#D4D4D4">[::]:80;</span></span>
+<span class="line"><span style="color:#569CD6">    listen </span><span style="color:#B5CEA8">443</span><span style="color:#D4D4D4"> ssl; </span><span style="color:#6A9955"># new line</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">    server_name </span><span style="color:#D4D4D4">my-app.test www.my-app.test;</span></span>
+<span class="line"><span style="color:#569CD6">    root </span><span style="color:#D4D4D4">/home/vojislav/code/my-app.test/public;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">    add_header </span><span style="color:#D4D4D4">X-Frame-Options </span><span style="color:#CE9178">"SAMEORIGIN"</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#569CD6">    add_header </span><span style="color:#D4D4D4">X-Content-Type-Options </span><span style="color:#CE9178">"nosniff"</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">    ssl_certificate </span><span style="color:#D4D4D4">/etc/ssl/self-signed-cert/self-signed-cert.crt; </span><span style="color:#6A9955"># new line</span></span>
+<span class="line"><span style="color:#569CD6">    ssl_certificate_key </span><span style="color:#D4D4D4">/etc/ssl/self-signed-cert/self-signed-cert.key; </span><span style="color:#6A9955"># new line</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">    index </span><span style="color:#D4D4D4">index.php;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">    charset </span><span style="color:#D4D4D4">utf-8;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">    location</span><span style="color:#D4D4D4"> / {</span></span>
+<span class="line"><span style="color:#569CD6">        try_files </span><span style="color:#D4D4D4">$</span><span style="color:#9CDCFE">uri</span><span style="color:#D4D4D4"> $</span><span style="color:#9CDCFE">uri</span><span style="color:#D4D4D4">/ /index.php?$</span><span style="color:#9CDCFE">query_string</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#D4D4D4">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">    location</span><span style="color:#D4D4D4"> = </span><span style="color:#D16969">/favicon.ico </span><span style="color:#D4D4D4">{</span><span style="color:#569CD6"> access_log off</span><span style="color:#D4D4D4">;</span><span style="color:#569CD6"> log_not_found off</span><span style="color:#D4D4D4">; }</span></span>
+<span class="line"><span style="color:#569CD6">    location</span><span style="color:#D4D4D4"> = </span><span style="color:#D16969">/robots.txt </span><span style="color:#D4D4D4">{</span><span style="color:#569CD6"> access_log off</span><span style="color:#D4D4D4">;</span><span style="color:#569CD6"> log_not_found off</span><span style="color:#D4D4D4">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">    error_page </span><span style="color:#B5CEA8">404</span><span style="color:#D4D4D4"> /index.php;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">    location</span><span style="color:#D4D4D4"> ~ </span><span style="color:#D16969">\.php$ </span><span style="color:#D4D4D4">{</span></span>
+<span class="line"><span style="color:#569CD6">        fastcgi_pass </span><span style="color:#D4D4D4">unix:/var/run/php/php8.1-fpm.sock;</span></span>
+<span class="line"><span style="color:#569CD6">        fastcgi_param </span><span style="color:#D4D4D4">SCRIPT_FILENAME $</span><span style="color:#9CDCFE">realpath_root</span><span style="color:#D4D4D4">$</span><span style="color:#9CDCFE">fastcgi_script_name</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#569CD6">        include </span><span style="color:#D4D4D4">fastcgi_params;</span></span>
+<span class="line"><span style="color:#D4D4D4">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">    location</span><span style="color:#D4D4D4"> ~ </span><span style="color:#D16969">/\.(?!well-known).* </span><span style="color:#D4D4D4">{</span></span>
+<span class="line"><span style="color:#569CD6">        deny all</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#D4D4D4">    }</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>Next, check if the Nginx configuration is correct.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">$</span><span style="color:#CE9178"> sudo</span><span style="color:#CE9178"> nginx</span><span style="color:#569CD6"> -t</span></span>
+<span class="line"><span style="color:#DCDCAA">nginx:</span><span style="color:#CE9178"> the</span><span style="color:#CE9178"> configuration</span><span style="color:#CE9178"> file</span><span style="color:#CE9178"> /etc/nginx/nginx.conf</span><span style="color:#CE9178"> syntax</span><span style="color:#CE9178"> is</span><span style="color:#CE9178"> ok</span></span>
+<span class="line"><span style="color:#DCDCAA">nginx:</span><span style="color:#CE9178"> configuration</span><span style="color:#CE9178"> file</span><span style="color:#CE9178"> /etc/nginx/nginx.conf</span><span style="color:#CE9178"> test</span><span style="color:#CE9178"> is</span><span style="color:#CE9178"> successful</span></span></code></pre><p>If everything is ok, restart the Nginx service.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">sudo</span><span style="color:#CE9178"> systemctl</span><span style="color:#CE9178"> restart</span><span style="color:#CE9178"> nginx</span></span></code></pre><p>Now, if you visit your project address it should work with a secure transfer protocol (HTTPS).</p>
+<p>That&#39;s it, now you can work on your project locally with the HTTPS protocol.</p>
+
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <footer class="max-w-3xl mx-auto w-full px-6 pb-8">
+        <div class="h-px bg-slate-200 mb-6"></div>
+        <p class="text-xs text-slate-400 text-center">
+            © 2014–<script>document.write(new Date().getFullYear())</script> <a href="https://vojislavd.com" class="hover:text-slate-600 transition-colors duration-200">Vojislav Dragicevic</a>. All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+        const iconCopy = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>'
+        const iconCheck = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+
+        document.querySelectorAll('.article-content pre').forEach(pre => {
+            const wrapper = document.createElement('div')
+            wrapper.style.cssText = 'position:relative'
+            pre.parentNode.insertBefore(wrapper, pre)
+            wrapper.appendChild(pre)
+
+            const btn = document.createElement('button')
+            btn.className = 'copy-btn'
+            btn.innerHTML = iconCopy
+            wrapper.appendChild(btn)
+
+            btn.addEventListener('click', () => {
+                navigator.clipboard.writeText(pre.querySelector('code').innerText)
+                btn.innerHTML = iconCheck
+                btn.classList.add('copied')
+                setTimeout(() => {
+                    btn.innerHTML = iconCopy
+                    btn.classList.remove('copied')
+                }, 2000)
+            })
+        })
+    </script>
+</body>
+</html>

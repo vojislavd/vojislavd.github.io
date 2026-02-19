@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Learn how to connect to a MySQL database using PHP PDO and perform basic CRUD operations — create, read, update, and delete records.">
+    <meta name="author" content="Vojislav Dragicevic">
+    <meta name="robots" content="index,follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://vojislavd.com/articles/connect-to-database-with-pdo-and-perform-crud-operations/">
+    <meta property="og:title" content="Connect to Database with PHP PDO and Perform Basic CRUD Operations">
+    <meta property="og:description" content="Learn how to connect to a MySQL database using PHP PDO and perform basic CRUD operations — create, read, update, and delete records.">
+    <meta property="og:image" content="https://vojislavd.com/images/me.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Connect to Database with PHP PDO and Perform Basic CRUD Operations">
+    <meta name="twitter:description" content="Learn how to connect to a MySQL database using PHP PDO and perform basic CRUD operations — create, read, update, and delete records.">
+    <meta name="twitter:image" content="https://vojislavd.com/images/me.jpg">
+
+    <title>Connect to Database with PHP PDO and Perform Basic CRUD Operations | Vojislav Dragicevic</title>
+    <link rel="canonical" href="https://vojislavd.com/articles/connect-to-database-with-pdo-and-perform-crud-operations/">
+    <link rel="alternate" href="https://vojislavd.com/articles/connect-to-database-with-pdo-and-perform-crud-operations/" hreflang="en">
+    <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" crossorigin href="/assets/style-CjBnfhH-.css">
+</head>
+<body class="bg-slate-50 font-mono text-slate-800 min-h-screen">
+    <div class="max-w-3xl mx-auto w-full px-6 py-10 sm:py-16">
+        <main>
+            <a
+                href="/"
+                class="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-700 transition-colors duration-200 mb-10"
+            >
+                <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Back
+            </a>
+
+            <article>
+                <header class="space-y-4 mb-8 sm:mb-12">
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight leading-snug">Connect to Database with PHP PDO and Perform Basic CRUD Operations</h1>
+                    <time class="text-xs text-slate-400">Mar 10, 2023</time>
+                </header>
+
+                <div class="article-content">
+                    <p>In this article, we&#39;ll cover how to connect to a database with PHP PDO (PHP Data Objects) and perform basic CRUD (Create, Read, Update, Delete) operations.</p>
+<h2>Connecting to the Database</h2>
+<p>First, we need to connect to the database. We&#39;ll use PHP PDO to connect to a MySQL database. Here&#39;s how you can establish a connection:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#9CDCFE">$dsn</span><span style="color:#D4D4D4"> = </span><span style="color:#CE9178">'mysql:host=localhost;dbname=mydatabase'</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#9CDCFE">$username</span><span style="color:#D4D4D4"> = </span><span style="color:#CE9178">'myusername'</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#9CDCFE">$password</span><span style="color:#D4D4D4"> = </span><span style="color:#CE9178">'mypassword'</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C586C0">try</span><span style="color:#D4D4D4"> {</span></span>
+<span class="line"><span style="color:#9CDCFE">    $pdo</span><span style="color:#D4D4D4"> = </span><span style="color:#569CD6">new</span><span style="color:#4EC9B0"> PDO</span><span style="color:#D4D4D4">(</span><span style="color:#9CDCFE">$dsn</span><span style="color:#D4D4D4">, </span><span style="color:#9CDCFE">$username</span><span style="color:#D4D4D4">, </span><span style="color:#9CDCFE">$password</span><span style="color:#D4D4D4">);</span></span>
+<span class="line"><span style="color:#9CDCFE">    $pdo</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">setAttribute</span><span style="color:#D4D4D4">(</span><span style="color:#4EC9B0">PDO</span><span style="color:#D4D4D4">::ATTR_ERRMODE, </span><span style="color:#4EC9B0">PDO</span><span style="color:#D4D4D4">::ERRMODE_EXCEPTION);</span></span>
+<span class="line"><span style="color:#D4D4D4">} </span><span style="color:#C586C0">catch</span><span style="color:#D4D4D4"> (</span><span style="color:#4EC9B0">PDOException</span><span style="color:#9CDCFE"> $e</span><span style="color:#D4D4D4">) {</span></span>
+<span class="line"><span style="color:#DCDCAA">    echo</span><span style="color:#CE9178"> 'Connection failed: '</span><span style="color:#D4D4D4"> .</span><span style="color:#9CDCFE"> $e</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">getMessage</span><span style="color:#D4D4D4">();</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>In this example, we specify the host, database name, username, and password. We then create a new PDO object and set the <code>PDO::ATTR_ERRMODE</code> attribute to <code>PDO::ERRMODE_EXCEPTION</code>. This tells PDO to throw an exception if there&#39;s an error connecting to the database.</p>
+<h2>CRUD Operations</h2>
+<p>Once we&#39;ve established a connection to the database, we can perform CRUD operations. Here are some examples of basic CRUD operations using PDO.</p>
+<h3>Create</h3>
+<p>To create a new record in the database, we need to use an <code>INSERT</code> statement. Here&#39;s an example:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#9CDCFE">$sql</span><span style="color:#D4D4D4"> = </span><span style="color:#CE9178">"</span><span style="color:#569CD6">INSERT INTO</span><span style="color:#CE9178"> users (</span><span style="color:#569CD6">name</span><span style="color:#CE9178">, email, </span><span style="color:#569CD6">password</span><span style="color:#CE9178">) </span><span style="color:#569CD6">VALUES</span><span style="color:#CE9178"> (?, ?, ?)"</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#9CDCFE">$stmt</span><span style="color:#D4D4D4"> = </span><span style="color:#9CDCFE">$pdo</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">prepare</span><span style="color:#D4D4D4">(</span><span style="color:#9CDCFE">$sql</span><span style="color:#D4D4D4">);</span></span>
+<span class="line"><span style="color:#9CDCFE">$stmt</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">execute</span><span style="color:#D4D4D4">([</span><span style="color:#CE9178">'John Doe'</span><span style="color:#D4D4D4">, </span><span style="color:#CE9178">'john@example.com'</span><span style="color:#D4D4D4">, </span><span style="color:#CE9178">'password123'</span><span style="color:#D4D4D4">]);</span></span></code></pre><p>In this example, we prepare an <code>INSERT</code> statement with placeholders for the values we want to insert. We then execute the statement with an array of values.</p>
+<h3>Read</h3>
+<p>To read records from the database, we use a <code>SELECT</code> statement. Here&#39;s an example:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#9CDCFE">$sql</span><span style="color:#D4D4D4"> = </span><span style="color:#CE9178">"</span><span style="color:#569CD6">SELECT</span><span style="color:#D4D4D4"> *</span><span style="color:#569CD6"> FROM</span><span style="color:#CE9178"> users"</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#9CDCFE">$stmt</span><span style="color:#D4D4D4"> = </span><span style="color:#9CDCFE">$pdo</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">query</span><span style="color:#D4D4D4">(</span><span style="color:#9CDCFE">$sql</span><span style="color:#D4D4D4">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C586C0">while</span><span style="color:#D4D4D4"> (</span><span style="color:#9CDCFE">$row</span><span style="color:#D4D4D4"> = </span><span style="color:#9CDCFE">$stmt</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">fetch</span><span style="color:#D4D4D4">()) {</span></span>
+<span class="line"><span style="color:#DCDCAA">    echo</span><span style="color:#9CDCFE"> $row</span><span style="color:#D4D4D4">[</span><span style="color:#CE9178">'name'</span><span style="color:#D4D4D4">] </span><span style="color:#D4D4D4">.</span><span style="color:#CE9178"> "</span><span style="color:#D7BA7D">\n</span><span style="color:#CE9178">"</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>In this example, we prepare a <code>SELECT</code> statement and execute it with the <code>query()</code> method. We then iterate over the results with the <code>fetch()</code> method and output the <code>name</code> field.</p>
+<h3>Update</h3>
+<p>To update a record in the database, we use an <code>UPDATE</code> statement. Here&#39;s an example:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#9CDCFE">$sql</span><span style="color:#D4D4D4"> = </span><span style="color:#CE9178">"</span><span style="color:#569CD6">UPDATE</span><span style="color:#CE9178"> users </span><span style="color:#569CD6">SET</span><span style="color:#569CD6"> name</span><span style="color:#D4D4D4"> =</span><span style="color:#CE9178"> ? </span><span style="color:#569CD6">WHERE</span><span style="color:#CE9178"> id </span><span style="color:#D4D4D4">=</span><span style="color:#CE9178"> ?"</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#9CDCFE">$stmt</span><span style="color:#D4D4D4"> = </span><span style="color:#9CDCFE">$pdo</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">prepare</span><span style="color:#D4D4D4">(</span><span style="color:#9CDCFE">$sql</span><span style="color:#D4D4D4">);</span></span>
+<span class="line"><span style="color:#9CDCFE">$stmt</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">execute</span><span style="color:#D4D4D4">([</span><span style="color:#CE9178">'Jane Doe'</span><span style="color:#D4D4D4">, </span><span style="color:#B5CEA8">1</span><span style="color:#D4D4D4">]);</span></span></code></pre><p>In this example, we prepare an <code>UPDATE</code> statement with placeholders for the values we want to update. We then execute the statement with an array of values.</p>
+<h3>Delete</h3>
+<p>To delete a record from the database, we use a <code>DELETE</code> statement. Here&#39;s an example:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#9CDCFE">$sql</span><span style="color:#D4D4D4"> = </span><span style="color:#CE9178">"</span><span style="color:#569CD6">DELETE</span><span style="color:#569CD6"> FROM</span><span style="color:#CE9178"> users </span><span style="color:#569CD6">WHERE</span><span style="color:#CE9178"> id </span><span style="color:#D4D4D4">=</span><span style="color:#CE9178"> ?"</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#9CDCFE">$stmt</span><span style="color:#D4D4D4"> = </span><span style="color:#9CDCFE">$pdo</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">prepare</span><span style="color:#D4D4D4">(</span><span style="color:#9CDCFE">$sql</span><span style="color:#D4D4D4">);</span></span>
+<span class="line"><span style="color:#9CDCFE">$stmt</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">execute</span><span style="color:#D4D4D4">([</span><span style="color:#B5CEA8">1</span><span style="color:#D4D4D4">]);</span></span></code></pre><p>In this example, we prepare a <code>DELETE</code> statement with a placeholder for the value we want to delete. We then execute the statement with an array of values.</p>
+<h2>Conclusion</h2>
+<p>In this article, we covered how to connect to a database with PHP PDO and perform basic CRUD operations. While these examples are simple, they should give you a good starting point for working with databases in PHP. As you become more familiar with PDO and SQL, you can use more advanced features to build more complex applications.</p>
+
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <footer class="max-w-3xl mx-auto w-full px-6 pb-8">
+        <div class="h-px bg-slate-200 mb-6"></div>
+        <p class="text-xs text-slate-400 text-center">
+            © 2014–<script>document.write(new Date().getFullYear())</script> <a href="https://vojislavd.com" class="hover:text-slate-600 transition-colors duration-200">Vojislav Dragicevic</a>. All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+        const iconCopy = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>'
+        const iconCheck = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+
+        document.querySelectorAll('.article-content pre').forEach(pre => {
+            const wrapper = document.createElement('div')
+            wrapper.style.cssText = 'position:relative'
+            pre.parentNode.insertBefore(wrapper, pre)
+            wrapper.appendChild(pre)
+
+            const btn = document.createElement('button')
+            btn.className = 'copy-btn'
+            btn.innerHTML = iconCopy
+            wrapper.appendChild(btn)
+
+            btn.addEventListener('click', () => {
+                navigator.clipboard.writeText(pre.querySelector('code').innerText)
+                btn.innerHTML = iconCheck
+                btn.classList.add('copied')
+                setTimeout(() => {
+                    btn.innerHTML = iconCopy
+                    btn.classList.remove('copied')
+                }, 2000)
+            })
+        })
+    </script>
+</body>
+</html>

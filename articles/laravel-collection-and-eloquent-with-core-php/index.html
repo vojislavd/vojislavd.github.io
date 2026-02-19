@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Find out how to use Laravel Collection and Eloquent ORM in plain PHP projects without the full Laravel framework.">
+    <meta name="author" content="Vojislav Dragicevic">
+    <meta name="robots" content="index,follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://vojislavd.com/articles/laravel-collection-and-eloquent-with-core-php/">
+    <meta property="og:title" content="Use Laravel Collection and Laravel Eloquent with Core PHP">
+    <meta property="og:description" content="Find out how to use Laravel Collection and Eloquent ORM in plain PHP projects without the full Laravel framework.">
+    <meta property="og:image" content="https://vojislavd.com/images/me.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Use Laravel Collection and Laravel Eloquent with Core PHP">
+    <meta name="twitter:description" content="Find out how to use Laravel Collection and Eloquent ORM in plain PHP projects without the full Laravel framework.">
+    <meta name="twitter:image" content="https://vojislavd.com/images/me.jpg">
+
+    <title>Use Laravel Collection and Laravel Eloquent with Core PHP | Vojislav Dragicevic</title>
+    <link rel="canonical" href="https://vojislavd.com/articles/laravel-collection-and-eloquent-with-core-php/">
+    <link rel="alternate" href="https://vojislavd.com/articles/laravel-collection-and-eloquent-with-core-php/" hreflang="en">
+    <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" crossorigin href="/assets/style-CjBnfhH-.css">
+</head>
+<body class="bg-slate-50 font-mono text-slate-800 min-h-screen">
+    <div class="max-w-3xl mx-auto w-full px-6 py-10 sm:py-16">
+        <main>
+            <a
+                href="/"
+                class="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-700 transition-colors duration-200 mb-10"
+            >
+                <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Back
+            </a>
+
+            <article>
+                <header class="space-y-4 mb-8 sm:mb-12">
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight leading-snug">Use Laravel Collection and Laravel Eloquent with Core PHP</h1>
+                    <time class="text-xs text-slate-400">Feb 25, 2023</time>
+                </header>
+
+                <div class="article-content">
+                    <p>Laravel is one of the most popular PHP web frameworks in the world. It is known for its clean, elegant syntax, powerful features, and excellent documentation. Two of the most powerful tools in the Laravel toolbox are the Collection and Eloquent ORM.</p>
+<p>In this article, we will explore how to use these tools with core PHP, outside of the Laravel framework.</p>
+<h2>Laravel Collection</h2>
+<p>The Laravel Collection is a powerful utility class that provides a convenient way to work with arrays and data sets. It provides a fluent, chainable interface for working with arrays, making it easy to filter, sort, and manipulate data.</p>
+<p>To use the Laravel Collection in your PHP project, you can install the Illuminate/Support package via Composer. Here is an example of how to create a new collection and perform some basic operations on it:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#569CD6">use</span><span style="color:#D4D4D4"> Illuminate\Support\</span><span style="color:#4EC9B0">Collection</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9CDCFE">$items</span><span style="color:#D4D4D4"> = </span><span style="color:#DCDCAA">collect</span><span style="color:#D4D4D4">([</span><span style="color:#B5CEA8">1</span><span style="color:#D4D4D4">, </span><span style="color:#B5CEA8">2</span><span style="color:#D4D4D4">, </span><span style="color:#B5CEA8">3</span><span style="color:#D4D4D4">, </span><span style="color:#B5CEA8">4</span><span style="color:#D4D4D4">, </span><span style="color:#B5CEA8">5</span><span style="color:#D4D4D4">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A9955">// Get the sum of the items</span></span>
+<span class="line"><span style="color:#9CDCFE">$sum</span><span style="color:#D4D4D4"> = </span><span style="color:#9CDCFE">$items</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">sum</span><span style="color:#D4D4D4">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A9955">// Get the average of the items</span></span>
+<span class="line"><span style="color:#9CDCFE">$average</span><span style="color:#D4D4D4"> = </span><span style="color:#9CDCFE">$items</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">average</span><span style="color:#D4D4D4">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A9955">// Filter the items to get only the even numbers</span></span>
+<span class="line"><span style="color:#9CDCFE">$evens</span><span style="color:#D4D4D4"> = </span><span style="color:#9CDCFE">$items</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">filter</span><span style="color:#D4D4D4">(</span><span style="color:#569CD6">function</span><span style="color:#D4D4D4"> (</span><span style="color:#9CDCFE">$item</span><span style="color:#D4D4D4">) {</span></span>
+<span class="line"><span style="color:#C586C0">    return</span><span style="color:#9CDCFE"> $item</span><span style="color:#D4D4D4"> % </span><span style="color:#B5CEA8">2</span><span style="color:#D4D4D4"> === </span><span style="color:#B5CEA8">0</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#D4D4D4">});</span></span></code></pre><p>As you can see, the Collection provides a clean and expressive syntax for working with arrays. You can also chain multiple operations together to create more complex queries:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#9CDCFE">$items</span><span style="color:#D4D4D4"> = </span><span style="color:#DCDCAA">collect</span><span style="color:#D4D4D4">([</span><span style="color:#B5CEA8">1</span><span style="color:#D4D4D4">, </span><span style="color:#B5CEA8">2</span><span style="color:#D4D4D4">, </span><span style="color:#B5CEA8">3</span><span style="color:#D4D4D4">, </span><span style="color:#B5CEA8">4</span><span style="color:#D4D4D4">, </span><span style="color:#B5CEA8">5</span><span style="color:#D4D4D4">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9CDCFE">$filtered</span><span style="color:#D4D4D4"> = </span><span style="color:#9CDCFE">$items</span></span>
+<span class="line"><span style="color:#D4D4D4">    -></span><span style="color:#DCDCAA">filter</span><span style="color:#D4D4D4">(</span><span style="color:#569CD6">function</span><span style="color:#D4D4D4"> (</span><span style="color:#9CDCFE">$item</span><span style="color:#D4D4D4">) {</span></span>
+<span class="line"><span style="color:#C586C0">        return</span><span style="color:#9CDCFE"> $item</span><span style="color:#D4D4D4"> % </span><span style="color:#B5CEA8">2</span><span style="color:#D4D4D4"> === </span><span style="color:#B5CEA8">0</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#D4D4D4">    })</span></span>
+<span class="line"><span style="color:#D4D4D4">    -></span><span style="color:#DCDCAA">map</span><span style="color:#D4D4D4">(</span><span style="color:#569CD6">function</span><span style="color:#D4D4D4"> (</span><span style="color:#9CDCFE">$item</span><span style="color:#D4D4D4">) {</span></span>
+<span class="line"><span style="color:#C586C0">        return</span><span style="color:#9CDCFE"> $item</span><span style="color:#D4D4D4"> * </span><span style="color:#B5CEA8">2</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#D4D4D4">    });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A9955">// Returns [4, 8]</span></span></code></pre><h2>Laravel Eloquent</h2>
+<p>Laravel Eloquent is a powerful ORM that provides a simple and elegant way to work with databases. It is built on top of the PDO library, and provides a fluent, expressive syntax for working with database records.</p>
+<p>To use Eloquent in your PHP project, you can install the Illuminate/Database package via Composer. Here is an example of how to create a new model and perform some basic operations on it:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#569CD6">use</span><span style="color:#D4D4D4"> Illuminate\Database\Eloquent\</span><span style="color:#4EC9B0">Model</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#569CD6">use</span><span style="color:#D4D4D4"> Illuminate\Database\Capsule\</span><span style="color:#4EC9B0">Manager</span><span style="color:#569CD6"> as</span><span style="color:#D4D4D4"> Capsule;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A9955">// Configure the database connection</span></span>
+<span class="line"><span style="color:#9CDCFE">$capsule</span><span style="color:#D4D4D4"> = </span><span style="color:#569CD6">new</span><span style="color:#4EC9B0"> Capsule</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#9CDCFE">$capsule</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">addConnection</span><span style="color:#D4D4D4">([</span></span>
+<span class="line"><span style="color:#CE9178">    'driver'</span><span style="color:#D4D4D4"> => </span><span style="color:#CE9178">'mysql'</span><span style="color:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#CE9178">    'host'</span><span style="color:#D4D4D4"> => </span><span style="color:#CE9178">'localhost'</span><span style="color:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#CE9178">    'database'</span><span style="color:#D4D4D4"> => </span><span style="color:#CE9178">'my_database'</span><span style="color:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#CE9178">    'username'</span><span style="color:#D4D4D4"> => </span><span style="color:#CE9178">'root'</span><span style="color:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#CE9178">    'password'</span><span style="color:#D4D4D4"> => </span><span style="color:#CE9178">''</span><span style="color:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#CE9178">    'charset'</span><span style="color:#D4D4D4"> => </span><span style="color:#CE9178">'utf8'</span><span style="color:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#CE9178">    'collation'</span><span style="color:#D4D4D4"> => </span><span style="color:#CE9178">'utf8_unicode_ci'</span><span style="color:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#CE9178">    'prefix'</span><span style="color:#D4D4D4"> => </span><span style="color:#CE9178">''</span><span style="color:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#D4D4D4">]);</span></span>
+<span class="line"><span style="color:#9CDCFE">$capsule</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">setAsGlobal</span><span style="color:#D4D4D4">();</span></span>
+<span class="line"><span style="color:#9CDCFE">$capsule</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">bootEloquent</span><span style="color:#D4D4D4">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A9955">// Create a new model</span></span>
+<span class="line"><span style="color:#569CD6">class</span><span style="color:#4EC9B0"> User</span><span style="color:#569CD6"> extends</span><span style="color:#4EC9B0"> Model</span><span style="color:#D4D4D4"> {</span></span>
+<span class="line"><span style="color:#569CD6">    protected</span><span style="color:#9CDCFE"> $table</span><span style="color:#D4D4D4"> = </span><span style="color:#CE9178">'users'</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A9955">// Find a user by ID</span></span>
+<span class="line"><span style="color:#9CDCFE">$user</span><span style="color:#D4D4D4"> = </span><span style="color:#4EC9B0">User</span><span style="color:#D4D4D4">::</span><span style="color:#DCDCAA">find</span><span style="color:#D4D4D4">(</span><span style="color:#B5CEA8">1</span><span style="color:#D4D4D4">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A9955">// Update the user's name</span></span>
+<span class="line"><span style="color:#9CDCFE">$user</span><span style="color:#D4D4D4">-></span><span style="color:#9CDCFE">name</span><span style="color:#D4D4D4"> = </span><span style="color:#CE9178">'John Doe'</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#9CDCFE">$user</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">save</span><span style="color:#D4D4D4">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A9955">// Delete the user</span></span>
+<span class="line"><span style="color:#9CDCFE">$user</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">delete</span><span style="color:#D4D4D4">();</span></span></code></pre><p>As you can see, Eloquent provides a clean and expressive syntax for working with database records. You can also define relationships between models, perform complex queries, and use other advanced features like eager loading and query scopes.</p>
+<h2>Conclusion</h2>
+<p>The Laravel Collection and Eloquent ORM are two powerful tools that can help you write clean, expressive code in your PHP projects. While they are designed to be used with the Laravel framework, you can also use them in standalone PHP projects to make your code more expressive and efficient. By using these tools, you can write code that is easy to read, maintain, and extend.</p>
+
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <footer class="max-w-3xl mx-auto w-full px-6 pb-8">
+        <div class="h-px bg-slate-200 mb-6"></div>
+        <p class="text-xs text-slate-400 text-center">
+            © 2014–<script>document.write(new Date().getFullYear())</script> <a href="https://vojislavd.com" class="hover:text-slate-600 transition-colors duration-200">Vojislav Dragicevic</a>. All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+        const iconCopy = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>'
+        const iconCheck = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+
+        document.querySelectorAll('.article-content pre').forEach(pre => {
+            const wrapper = document.createElement('div')
+            wrapper.style.cssText = 'position:relative'
+            pre.parentNode.insertBefore(wrapper, pre)
+            wrapper.appendChild(pre)
+
+            const btn = document.createElement('button')
+            btn.className = 'copy-btn'
+            btn.innerHTML = iconCopy
+            wrapper.appendChild(btn)
+
+            btn.addEventListener('click', () => {
+                navigator.clipboard.writeText(pre.querySelector('code').innerText)
+                btn.innerHTML = iconCheck
+                btn.classList.add('copied')
+                setTimeout(() => {
+                    btn.innerHTML = iconCopy
+                    btn.classList.remove('copied')
+                }, 2000)
+            })
+        })
+    </script>
+</body>
+</html>

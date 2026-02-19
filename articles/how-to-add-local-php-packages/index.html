@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Learn how to include a local PHP package in your Composer project using path repositories, useful for testing packages before publishing.">
+    <meta name="author" content="Vojislav Dragicevic">
+    <meta name="robots" content="index,follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://vojislavd.com/articles/how-to-add-local-php-packages/">
+    <meta property="og:title" content="How to Add Local PHP Packages to Your Composer Project">
+    <meta property="og:description" content="Learn how to include a local PHP package in your Composer project using path repositories, useful for testing packages before publishing.">
+    <meta property="og:image" content="https://vojislavd.com/images/me.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="How to Add Local PHP Packages to Your Composer Project">
+    <meta name="twitter:description" content="Learn how to include a local PHP package in your Composer project using path repositories, useful for testing packages before publishing.">
+    <meta name="twitter:image" content="https://vojislavd.com/images/me.jpg">
+
+    <title>How to Add Local PHP Packages to Your Composer Project | Vojislav Dragicevic</title>
+    <link rel="canonical" href="https://vojislavd.com/articles/how-to-add-local-php-packages/">
+    <link rel="alternate" href="https://vojislavd.com/articles/how-to-add-local-php-packages/" hreflang="en">
+    <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" crossorigin href="/assets/style-CjBnfhH-.css">
+</head>
+<body class="bg-slate-50 font-mono text-slate-800 min-h-screen">
+    <div class="max-w-3xl mx-auto w-full px-6 py-10 sm:py-16">
+        <main>
+            <a
+                href="/"
+                class="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-700 transition-colors duration-200 mb-10"
+            >
+                <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Back
+            </a>
+
+            <article>
+                <header class="space-y-4 mb-8 sm:mb-12">
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight leading-snug">How to Add Local PHP Packages to Your Composer Project</h1>
+                    <time class="text-xs text-slate-400">Jan 8, 2025</time>
+                </header>
+
+                <div class="article-content">
+                    <p>While working on a PHP project, you might need to include a local package that isn&#39;t available on public repositories like Packagist. This might be for testing purposes, or you may have developed a custom package that you want to test before publishing.</p>
+<p>Composer provides a simple way to work with local packages by specifying the path to the package in the composer.json file.</p>
+<h2>Create local package</h2>
+<p>First, let&#39;s create a simple local package that we can use in any PHP project. This package will have a basic class that returns a message.</p>
+<p>Create a new directory for your package:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">mkdir</span><span style="color:#CE9178"> local-package</span></span>
+<span class="line"><span style="color:#DCDCAA">cd</span><span style="color:#CE9178"> local-package</span></span></code></pre><p>Next, create a <code>composer.json</code> file inside your package directory.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#D4D4D4">{</span></span>
+<span class="line"><span style="color:#9CDCFE">    "name"</span><span style="color:#D4D4D4">: </span><span style="color:#CE9178">"example/local-package"</span><span style="color:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#9CDCFE">    "autoload"</span><span style="color:#D4D4D4">: {</span></span>
+<span class="line"><span style="color:#9CDCFE">        "psr-4"</span><span style="color:#D4D4D4">: {</span></span>
+<span class="line"><span style="color:#9CDCFE">            "Example</span><span style="color:#D7BA7D">\\</span><span style="color:#9CDCFE">LocalPackage</span><span style="color:#D7BA7D">\\</span><span style="color:#9CDCFE">"</span><span style="color:#D4D4D4">: </span><span style="color:#CE9178">"src/"</span></span>
+<span class="line"><span style="color:#D4D4D4">        }</span></span>
+<span class="line"><span style="color:#D4D4D4">    }</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>Inside your package directory, create a <code>src</code> folder, and then within it, create a file named <code>Message.php</code>.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#6A9955">// src/Message.php</span></span>
+<span class="line"><span style="color:#D4D4D4">&#x3C;?php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">namespace</span><span style="color:#4EC9B0"> Example\LocalPackage</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#569CD6">class</span><span style="color:#4EC9B0"> Message</span></span>
+<span class="line"><span style="color:#D4D4D4">{</span></span>
+<span class="line"><span style="color:#569CD6">    public</span><span style="color:#569CD6"> function</span><span style="color:#DCDCAA"> get</span><span style="color:#D4D4D4">()</span></span>
+<span class="line"><span style="color:#D4D4D4">    {</span></span>
+<span class="line"><span style="color:#C586C0">        return</span><span style="color:#CE9178"> 'This is a message from a local package'</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"><span style="color:#D4D4D4">    }</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>At this point, our local package is ready.</p>
+<h2>Use local package in PHP project</h2>
+<p>To use the local package in your PHP project, add the following configuration to the <code>composer.json</code> file in your project&#39;s root directory:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#D4D4D4">{</span></span>
+<span class="line"><span style="color:#6A9955">    // rest of your composer.json file ...</span></span>
+<span class="line"><span style="color:#9CDCFE">    "repositories"</span><span style="color:#D4D4D4">: [</span></span>
+<span class="line"><span style="color:#D4D4D4">        {</span></span>
+<span class="line"><span style="color:#9CDCFE">            "type"</span><span style="color:#D4D4D4">: </span><span style="color:#CE9178">"path"</span><span style="color:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#9CDCFE">            "url"</span><span style="color:#D4D4D4">: </span><span style="color:#CE9178">"./../local-package"</span><span style="color:#6A9955"> // Path from composer.json file to your local package</span></span>
+<span class="line"><span style="color:#D4D4D4">        }</span></span>
+<span class="line"><span style="color:#D4D4D4">    ]</span></span>
+<span class="line"><span style="color:#D4D4D4">}</span></span></code></pre><p>From the root directory of your PHP project, run the following command to require the package:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">composer</span><span style="color:#CE9178"> require</span><span style="color:#CE9178"> example/local-package</span></span></code></pre><p>To apply all changes from the <code>composer.json</code> file, including adding local packages, updating dependencies, and updating the <code>composer.lock</code> file, run the following command:</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#DCDCAA">composer</span><span style="color:#CE9178"> update</span></span></code></pre><p>Once the package is installed, you can use it anywhere within your PHP project.</p>
+<pre class="shiki dark-plus" style="background-color:#1E1E1E;color:#D4D4D4" tabindex="0"><code><span class="line"><span style="color:#D4D4D4">&#x3C;?php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C586C0">require</span><span style="color:#CE9178"> './../vendor/autoload.php'</span><span style="color:#D4D4D4">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9CDCFE">$message</span><span style="color:#D4D4D4"> = </span><span style="color:#569CD6">new</span><span style="color:#D4D4D4"> \Example\LocalPackage\</span><span style="color:#4EC9B0">Message</span><span style="color:#D4D4D4">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#DCDCAA">echo</span><span style="color:#9CDCFE"> $message</span><span style="color:#D4D4D4">-></span><span style="color:#DCDCAA">get</span><span style="color:#D4D4D4">(); </span><span style="color:#6A9955">// Output: This is a message from a local package</span></span></code></pre><p>That&#39;s it! You can now easily integrate your local package into any PHP project.</p>
+<h2>Conclusion</h2>
+<p>Composer makes managing and integrating local packages simple by allowing you to specify their path in your project&#39;s composer.json. This way, you can work with custom packages during development without needing to publish them first.</p>
+
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <footer class="max-w-3xl mx-auto w-full px-6 pb-8">
+        <div class="h-px bg-slate-200 mb-6"></div>
+        <p class="text-xs text-slate-400 text-center">
+            © 2014–<script>document.write(new Date().getFullYear())</script> <a href="https://vojislavd.com" class="hover:text-slate-600 transition-colors duration-200">Vojislav Dragicevic</a>. All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+        const iconCopy = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>'
+        const iconCheck = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+
+        document.querySelectorAll('.article-content pre').forEach(pre => {
+            const wrapper = document.createElement('div')
+            wrapper.style.cssText = 'position:relative'
+            pre.parentNode.insertBefore(wrapper, pre)
+            wrapper.appendChild(pre)
+
+            const btn = document.createElement('button')
+            btn.className = 'copy-btn'
+            btn.innerHTML = iconCopy
+            wrapper.appendChild(btn)
+
+            btn.addEventListener('click', () => {
+                navigator.clipboard.writeText(pre.querySelector('code').innerText)
+                btn.innerHTML = iconCheck
+                btn.classList.add('copied')
+                setTimeout(() => {
+                    btn.innerHTML = iconCopy
+                    btn.classList.remove('copied')
+                }, 2000)
+            })
+        })
+    </script>
+</body>
+</html>
